@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     compatibilityDate: "2025-05-15",
     devtools: { enabled: true },
 
-    modules: ["@nuxtjs/supabase", 'shadcn-nuxt'],
+    modules: ["@nuxtjs/supabase", 'shadcn-nuxt', '@vueuse/nuxt'],
 
     css: ['~/assets/css/main.css'],
 
@@ -21,9 +21,7 @@ export default defineNuxtConfig({
     },
 
     runtimeConfig: {
-        // The private keys which are only available within server-side
-        apiSecret: '123',
-        // Keys within public, will be also exposed to the client-side
+
         public: {
             authApiBase: process.env.AUTH_FUNCTION_URL,
             supabaseKey: process.env.SUPABASE_KEY,

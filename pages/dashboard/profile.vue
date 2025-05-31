@@ -4,6 +4,8 @@ definePageMeta({
 });
 import { Button } from "@/components/ui/button";
 
+const { userProfile, isProfileLoading, profileError } = useUserProfile();
+
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
 const loading = ref(false);
@@ -75,6 +77,16 @@ async function signOut() {
           {{ loading ? "Signing out..." : "Sign Out" }}
         </Button>
       </div>
+    </div>
+
+    <div v-if="isProfileLoading">Chargement du profil...</div>
+    <div v-else-if="profileError">Erreur : {{ profileError.message }}</div>
+    <div v-else-if="userProfile">
+      <p>Bienvenue {{ userProfile.full_name }}</p>
+      <p>Rôle : {{ userProfile.role }}</p>
+    </div>
+    <div v-else>
+      <p>Utilisateur non connecté</p>
     </div>
   </div>
 </template>

@@ -62,30 +62,6 @@ const handleSignup = async () => {
 
   // Handle the result (e.g., show a message, redirect, etc.)
 };
-
-async function signUp() {
-  loading.value = true;
-  error.value = "";
-
-  try {
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (signUpError) throw signUpError;
-
-    // Redirect to confirm page or dashboard
-    navigateTo("/auth/confirm");
-  } catch (e: any) {
-    error.value = e.message || "An error occurred during sign up";
-  } finally {
-    loading.value = false;
-  }
-}
 </script>
 
 <template>

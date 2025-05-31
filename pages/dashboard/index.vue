@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 definePageMeta({
   middleware: ["auth"],
+  layout: "dashboard",
 });
 
 const user = useSupabaseUser();
