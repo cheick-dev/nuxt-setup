@@ -74,10 +74,10 @@ import { Button } from "@/components/ui/button";
 //   import { useToast } from '@/components/ui/use-toast'
 import { toast } from "vue-sonner";
 
-import ShareListing from "~/components/listing/ShareListing.vue";
-import ExpirationBadge from "~/components/listing/ExpirationBadge.vue";
-import ExpiredListingBanner from "~/components/listing/ExpiredListingBanner.vue";
-import EdgeFunctionExpirationSimulator from "@/components/EdgeFunctionExpirationSimulator.vue";
+import ShareListing from "~/components/ShareListing";
+import ExpirationBadge from "~/components/ExpirationBadge";
+import ExpiredListingBanner from "~/components/ExpiredListingBanner";
+import EdgeFunctionExpirationSimulator from "@/components/EdgeFunctionExpirationSimulator";
 
 //   const { toast } = useToast()
 

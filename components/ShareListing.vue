@@ -199,7 +199,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 //   import { useToast } from '@/components/ui/use-toast'
 import { toast } from "vue-sonner";
 
-import ExpirationBadge from "~/components/listing/ExpirationBadge.vue";
+import ExpirationBadge from "~/components/ExpirationBadge";
 
 // Importation de QRCode.js
 import QRCode from "qrcode";

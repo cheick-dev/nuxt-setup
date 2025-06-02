@@ -282,9 +282,9 @@ import {
 } from "@/components/ui/select";
 import { toast } from "vue-sonner";
 
-import ProductCard from "~/components/ProductCard.vue";
-import StatusBadge from "@/components/StatusBadge.vue";
-import AddProductModal from "@/components/AddProductModal.vue";
+import ProductCard from "~/components/ProductCard";
+import StatusBadge from "@/components/StatusBadge";
+import AddProductModal from "@/components/AddProductModal";
 
 // État de l'interface
 const mobileMenuOpen = ref(false);

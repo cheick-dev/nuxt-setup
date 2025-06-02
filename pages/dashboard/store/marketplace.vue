@@ -168,7 +168,7 @@ import {
 // import { useToast } from "@/components/ui/use-toast";
 import { toast } from "vue-sonner";
 
-import ProductReservationCard from "@/components/ProductReservationCard.vue";
+import ProductReservationCard from "@/components/ProductReservationCard";
 
 // const { toast } = useToast();
 

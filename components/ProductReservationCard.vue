@@ -71,9 +71,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "vue-sonner";
 
-import StatusBadge from "@/components/StatusBadge.vue";
-import ReservationModal from "@/components/ReservationModal.vue";
-import ReservationTimer from "~/components/ReservationTimer.vue";
+import StatusBadge from "@/components/StatusBadge";
+import ReservationModal from "@/components/ReservationModal";
+import ReservationTimer from "~/components/ReservationTimer";
 
 const props = defineProps({
   product: {

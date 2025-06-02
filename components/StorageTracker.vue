@@ -204,7 +204,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { toast } from "vue-sonner";
-import StorageHistory from "~/components/storage/StorageHistory.vue";
+import StorageHistory from "~/components/StorageHistory";
 
 // Props
 const props = defineProps({

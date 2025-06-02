@@ -329,7 +329,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { toast } from "vue-sonner";
 
 // Import du composant d'upload d'images
-import ImageUpload from "~/components/listing/ImageUpload.vue";
+import ImageUpload from "~/components/ImageUpload";
 
 // État de l'interface
 const mobileMenuOpen = ref(false);
