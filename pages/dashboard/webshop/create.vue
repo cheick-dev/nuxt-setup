@@ -67,17 +67,25 @@
               <!-- Prix -->
               <div>
                 <Label for="price" class="mb-2">Prix *</Label>
+
                 <div class="relative">
-                  <Input
-                    id="price"
-                    v-model.number="form.price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    class="pl-8"
-                    :class="{ 'border-red-500': errors.price }"
-                  />
+                  <div class="relative">
+                    <Input
+                      id="price"
+                      v-model.number="form.price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      class="pl-8"
+                      :class="{ 'border-red-500': errors.price }"
+                    />
+                    <span
+                      class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    >
+                      {{ form.price ? formatCurrency(form.price) : "0,00 €" }}
+                    </span>
+                  </div>
                   <Euro
                     class="w-4 h-4 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400"
                   />
@@ -165,15 +173,19 @@
                       ]"
                     >
                       <CalendarIcon class="mr-2 h-4 w-4" />
-                      {{
+
+                      <span>{{
                         form.depositDeadline
                           ? formatDate(form.depositDeadline)
                           : "Sélectionner une date"
-                      }}
+                      }}</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent class="w-auto p-0" align="start">
-                    <Calendar v-model="form.depositDeadline" />
+                    <Calendar
+                      v-model:placeholder="form.depositDeadline"
+                      :model-value="form.depositDeadline"
+                    />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -325,21 +337,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-// import { Toaster } from "@/components/ui/sonner";
 import { toast } from "vue-sonner";
 
 // Import du composant d'upload d'images
 import ImageUpload from "~/components/ImageUpload.vue";
 
 // État de l'interface
-const mobileMenuOpen = ref(false);
-const sidebarCollapsed = ref(false);
 const isLoading = ref(false);
 const imageUploading = ref(false);
 const uploadedImages = ref([]);
-
-// Toast pour les notifications
-// const { toast } = useToast();
 
 // Schéma de validation Zod
 const listingSchema = z.object({

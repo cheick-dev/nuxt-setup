@@ -47,8 +47,6 @@ async function signInWithPassword() {
       password: password.value,
     });
     console.log(result);
-    const message = "Identifiants invalides : Email not confirmed";
-    console.log(result.error?.includes("Email not confirmed"));
 
     if (result.error) {
       error.value = result.error;

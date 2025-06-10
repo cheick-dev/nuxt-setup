@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   middleware: ["auth"],
+  layout: "dashboard",
 });
 import { Button } from "@/components/ui/button";
 

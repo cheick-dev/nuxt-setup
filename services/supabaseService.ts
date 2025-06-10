@@ -5,14 +5,15 @@ export type AuthInfos = {
     role?: string;
 };
 
-const baseUrl = 'https://pnkaolisosupgteikyyz.supabase.co/functions/v1/auth';
+const baseUrl = 'https://pnkaolisosupgteikyyz.supabase.co/functions/v1';
 
 export const supabaseService = {
+    // Auth
     async signup({ email, password, full_name, role }: AuthInfos) {
         const supabase = useSupabaseClient();
         const config = useRuntimeConfig();
 
-        const response = await fetch(`${baseUrl}/signup`, {
+        const response = await fetch(`${baseUrl}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,7 +39,7 @@ export const supabaseService = {
         const supabase = useSupabaseClient();
         const config = useRuntimeConfig();
 
-        const response = await fetch(`${baseUrl}/signin`, {
+        const response = await fetch(`${baseUrl}/auth/signin`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -66,7 +67,6 @@ export const supabaseService = {
 
     async getMe() {
         const supabase = useSupabaseClient();
-        const config = useRuntimeConfig();
         const session = await supabase.auth.getSession();
 
         const token = session.data?.session?.access_token;
@@ -74,7 +74,7 @@ export const supabaseService = {
             throw new Error('Session introuvable');
         }
 
-        const response = await fetch(`${baseUrl}/me`, {
+        const response = await fetch(`${baseUrl}/auth/me`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -94,7 +94,7 @@ export const supabaseService = {
             throw new Error('Session introuvable');
         }
 
-        const response = await fetch(`${baseUrl}/me`, {
+        const response = await fetch(`${baseUrl}/auth/me`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -105,4 +105,36 @@ export const supabaseService = {
 
         return response.json();
     },
+
+    // Products
+    async createProduct(payload: any) {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/create-product`, {
+            method: 'POST',
+            headers: {
+                // "Content-Type": "multipart/form-data",
+                'Authorization': `Bearer ${token}`,
+            },
+            body: payload,
+        });
+
+        const data = await response.json();
+        return data;
+    },
+    async getAllProducts() {
+
+        const response = await fetch(`${baseUrl}/get-all-products`)
+
+        const data = await response.json();
+        return data.products;
+    },
 };
+
+

@@ -13,6 +13,7 @@
       ]"
       @dragenter="isDragging = true"
       @dragleave="isDragging = false"
+      v-if="modelValue.length < maxFiles"
     >
       <div class="space-y-4">
         <div
@@ -46,7 +47,7 @@
       <!-- Loading overlay -->
       <div
         v-if="loading"
-        class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg"
+        class="flex items-center justify-center bg-white bg-opacity-75 rounded-lg"
       >
         <div class="flex items-center space-x-2">
           <Loader2 class="w-5 h-5 animate-spin text-blue-600" />
@@ -64,6 +65,7 @@
       accept="image/*"
       class="hidden"
       @change="handleFileSelect"
+      :max="maxFiles"
     />
 
     <!-- Prévisualisation des images -->
@@ -84,7 +86,7 @@
 
         <!-- Overlay avec actions -->
         <div
-          class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center"
+          class="absolute inset-0 bg-black opacity-5 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center"
         >
           <div
             class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 space-x-2"

@@ -1,5 +1,5 @@
 // composables/useUserProfile.ts
-import { useSupabaseUser, useSupabaseClient } from '#imports'
+import { useSupabaseUser } from '#imports'
 import { ref, watchEffect } from 'vue'
 import { supabaseService } from "@/services/supabaseService";
 

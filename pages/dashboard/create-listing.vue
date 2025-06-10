@@ -11,12 +11,12 @@
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">
                   Images du produit
                 </h2>
-                <Badge variant="secondary">{{ uploadedImages.length }}/5</Badge>
+                <Badge variant="secondary">{{ uploadedImages.length }}/4</Badge>
               </div>
 
               <ImageUpload
                 v-model="uploadedImages"
-                :max-files="5"
+                :max-files="4"
                 @upload="handleImageUpload"
                 :loading="imageUploading"
               />
@@ -118,8 +118,8 @@
               <Label for="store" class="mb-2"
                 >Sélectionner une boutique *</Label
               >
-              <Select v-model="form.storeId">
-                <SelectTrigger :class="{ 'border-red-500': errors.storeId }">
+              <Select v-model="form.store_id">
+                <SelectTrigger :class="{ 'border-red-500': errors.store_id }">
                   <SelectValue placeholder="Choisir une boutique" />
                 </SelectTrigger>
                 <SelectContent>
@@ -139,8 +139,8 @@
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p v-if="errors.storeId" class="text-sm text-red-500 mt-1">
-                {{ errors.storeId }}
+              <p v-if="errors.store_id" class="text-sm text-red-500 mt-1">
+                {{ errors.store_id }}
               </p>
             </div>
           </Card>
@@ -154,28 +154,35 @@
             <div class="space-y-6">
               <!-- Délai de dépôt -->
               <div>
-                <Label for="depositDeadline" class="mb-2">Délai de dépôt</Label>
-                <Popover>
+                <Label for="deposit_delay" class="mb-2">Délai de dépôt</Label>
+                <Input type="date" v-model="form.deposit_delay" />
+                <!-- <Popover>
                   <PopoverTrigger as-child>
                     <Button
                       variant="outline"
                       :class="[
                         'w-full justify-start text-left font-normal',
-                        !form.depositDeadline && 'text-muted-foreground',
+                        !form.deposit_delay && 'text-muted-foreground',
                       ]"
                     >
                       <CalendarIcon class="mr-2 h-4 w-4" />
+
                       {{
-                        form.depositDeadline
-                          ? formatDate(form.depositDeadline)
+                        form.deposit_delay
+                          ? formatDate(form.deposit_delay)
                           : "Sélectionner une date"
                       }}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent class="w-auto p-0" align="start">
-                    <Calendar v-model="form.depositDeadline" />
+                    <Calendar
+                      v-model="form.deposit_delay"
+                      :model-value="form.deposit_delay"
+                      initial-focus
+                    />
                   </PopoverContent>
                 </Popover>
+                <span>{{ formatDate(form.deposit_delay) }}</span> -->
               </div>
 
               <!-- Conditions de vente -->
@@ -245,7 +252,7 @@
 
           <!-- Actions -->
           <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
-            <Button
+            <!-- <Button
               type="button"
               variant="outline"
               @click="saveDraft"
@@ -254,7 +261,7 @@
             >
               <Save class="w-4 h-4 mr-2" />
               Sauvegarder le brouillon
-            </Button>
+            </Button> -->
 
             <Button type="submit" :disabled="isLoading" class="sm:order-2">
               <template v-if="isLoading">
@@ -273,7 +280,7 @@
   </div>
 </template>
 
-<script setup>
+<!-- <script setup>
 definePageMeta({
   middleware: ["auth"],
   layout: "dashboard",
@@ -325,21 +332,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-// import { Toaster } from "@/components/ui/sonner";
 import { toast } from "vue-sonner";
-
-// Import du composant d'upload d'images
 import ImageUpload from "~/components/ImageUpload";
 
-// État de l'interface
-const mobileMenuOpen = ref(false);
-const sidebarCollapsed = ref(false);
+const supabase = useSupabaseClient();
+
 const isLoading = ref(false);
 const imageUploading = ref(false);
 const uploadedImages = ref([]);
-
-// Toast pour les notifications
-// const { toast } = useToast();
+const Images = ref(null);
 
 // Schéma de validation Zod
 const listingSchema = z.object({
@@ -353,8 +354,11 @@ const listingSchema = z.object({
     .string()
     .min(20, "La description doit contenir au moins 20 caractères")
     .max(1000, "La description ne peut pas dépasser 1000 caractères"),
-  storeId: z.string().min(1, "Veuillez sélectionner une boutique"),
-  depositDeadline: z.date().optional(),
+  store_id: z.string().min(1, "Veuillez sélectionner une boutique"),
+  deposit_delay: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
   conditions: z.string().optional(),
   options: z.object({
     delivery: z.boolean(),
@@ -365,17 +369,19 @@ const listingSchema = z.object({
 
 // Formulaire réactif
 const form = reactive({
-  title: "",
-  category: "",
-  price: null,
-  description: "",
-  storeId: "",
-  depositDeadline: null,
-  conditions: "",
+  title: "Lorem Ipsum",
+  category: "electronics",
+  price: 100,
+  description:
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  store_id: "1",
+  deposit_delay: null,
+  conditions:
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
   options: {
-    delivery: false,
-    negotiable: false,
-    pickup: false,
+    delivery: true,
+    negotiable: true,
+    pickup: true,
   },
 });
 
@@ -408,11 +414,9 @@ const updateCharCount = () => {
 // Gestion de l'upload d'images
 const handleImageUpload = async (files) => {
   imageUploading.value = true;
+  Images.value = files;
 
   try {
-    // Simulation de l'upload vers Supabase Storage
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     // Ajouter les nouvelles images
     const newImages = files.map((file, index) => ({
       id: Date.now() + index,
@@ -422,13 +426,11 @@ const handleImageUpload = async (files) => {
 
     uploadedImages.value.push(...newImages);
 
-    toast({
-      title: "Images uploadées",
+    toast("Images uploadées", {
       description: `${files.length} image(s) ajoutée(s) avec succès`,
     });
   } catch (error) {
-    toast({
-      title: "Erreur d'upload",
+    toast("Erreur d'upload", {
       description: "Impossible d'uploader les images",
       variant: "destructive",
     });
@@ -442,6 +444,7 @@ const validateForm = () => {
   try {
     listingSchema.parse(form);
     errors.value = {};
+
     return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -451,6 +454,8 @@ const validateForm = () => {
         errors.value[path] = err.message;
       });
     }
+    console.log("Erreurs de validation", errors.value);
+
     return false;
   }
 };
@@ -489,11 +494,46 @@ const saveDraft = async () => {
   }
 };
 
+async function handleFileUpload(files) {
+  if (!files || !files.value) {
+    console.error("Aucun fichier à uploader");
+    return [];
+  }
+
+  const uploadedImageUrls = [];
+
+  for (const file of files.value) {
+    const filePath = `${
+      (await supabase.auth.getUser()).data.user.id
+    }/${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage
+      .from("product-images")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Erreur lors de l'upload de l'image:", error.message);
+      continue;
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("product-images").getPublicUrl(filePath);
+
+    uploadedImageUrls.push(publicUrl);
+  }
+
+  return uploadedImageUrls;
+}
+
 // Soumission du formulaire (publication)
 const onSubmit = async () => {
   if (!validateForm()) {
-    toast({
-      title: "Erreurs de validation",
+    console.log("Erreurs de validation", errors.value);
+
+    toast("Erreurs de validation", {
       description: "Veuillez corriger les erreurs dans le formulaire",
       variant: "destructive",
     });
@@ -501,8 +541,7 @@ const onSubmit = async () => {
   }
 
   if (uploadedImages.value.length === 0) {
-    toast({
-      title: "Images manquantes",
+    toast("Images manquantes", {
       description: "Veuillez ajouter au moins une image",
       variant: "destructive",
     });
@@ -512,31 +551,254 @@ const onSubmit = async () => {
   isLoading.value = true;
 
   try {
-    // Simulation de la publication
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
+    const imageUrls = await handleFileUpload(Images);
     // Sauvegarde dans Supabase avec statut 'published'
-    const listingData = {
-      ...form,
-      images: uploadedImages.value,
-      status: "published",
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .insert({
+        title: form.title,
+        description: form.description,
+        price: form.price,
+        user_id: (await supabase.auth.getUser()).data.user.id,
+      })
+      .select()
+      .single();
 
-    console.log("Publication annonce:", listingData);
+    if (productError) throw productError;
 
-    toast({
-      title: "Annonce publiée !",
+    // Sauvegarde des images supplémentaires
+    if (imageUrls.length > 1) {
+      console.log("imageUrls", imageUrls);
+
+      const { error: imagesError } = await supabase
+        .from("product_images")
+        .insert({
+          product_id: product.id,
+          urls: imageUrls,
+        });
+
+      if (imagesError) throw imagesError;
+    }
+
+    toast("Annonce publiée !", {
       description: "Votre annonce est maintenant visible sur la marketplace",
     });
 
     // Redirection vers la liste des annonces
     // router.push('/dashboard/listings')
   } catch (error) {
-    toast({
-      title: "Erreur de publication",
+    console.error(error);
+    toast("Erreur de publication", {
       description: "Impossible de publier l'annonce",
+      variant: "destructive",
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+</script> -->
+
+<script setup>
+definePageMeta({
+  middleware: ["auth"],
+  layout: "dashboard",
+  title: "Créer une annonce",
+});
+
+import { ref, computed, reactive } from "vue";
+import { z } from "zod";
+import {
+  Euro,
+  Store,
+  CalendarIcon,
+  Truck,
+  MessageCircle,
+  MapPin,
+  Send,
+  Loader2,
+} from "lucide-vue-next";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "vue-sonner";
+import ImageUpload from "@/components/ImageUpload";
+
+import { supabaseService } from "@/services/supabaseService";
+
+const isLoading = ref(false);
+const imageUploading = ref(false);
+const uploadedImages = ref([]); // contient les fichiers bruts (File[])
+const Images = ref(null);
+
+// Schéma Zod
+const listingSchema = z.object({
+  title: z.string().min(5).max(100),
+  category: z.string().min(1),
+  price: z.number().min(0.01),
+  description: z.string().min(20).max(1000),
+  store_id: z.string().min(1),
+  deposit_delay: z.string().optional(),
+  conditions: z.string().optional(),
+  options: z.object({
+    delivery: z.boolean(),
+    negotiable: z.boolean(),
+    pickup: z.boolean(),
+  }),
+});
+
+// const form = reactive({
+//   title: "",
+//   category: "",
+//   price: 0,
+//   description: "",
+//   store_id: "",
+//   deposit_delay: null,
+//   conditions: "",
+//   options: {
+//     delivery: false,
+//     negotiable: false,
+//     pickup: false,
+//   },
+// });
+
+const form = reactive({
+  title: "Lorem Ipsum",
+  price: 100,
+  category: "electronics",
+  description:
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  store_id: "1b446596-469d-4a41-bbdf-b70341265126",
+  deposit_delay: null,
+  conditions:
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  options: {
+    delivery: true,
+    negotiable: true,
+    pickup: true,
+  },
+});
+
+const updateCharCount = () => {
+  // Fonction appelée lors de la saisie dans la description
+};
+
+const handleImageUpload = async (files) => {
+  imageUploading.value = true;
+  Images.value = files;
+
+  try {
+    // Ajouter les nouvelles images
+    const newImages = files.map((file, index) => ({
+      id: Date.now() + index,
+      url: URL.createObjectURL(file),
+      name: file.name,
+    }));
+
+    uploadedImages.value.push(...newImages);
+
+    toast("Images uploadées", {
+      description: `${files.length} image(s) ajoutée(s) avec succès`,
+    });
+  } catch (error) {
+    toast("Erreur d'upload", {
+      description: "Impossible d'uploader les images",
+      variant: "destructive",
+    });
+  } finally {
+    imageUploading.value = false;
+  }
+};
+
+const errors = ref({});
+
+const availableStores = ref([
+  { id: "1", name: "Ma Boutique Bio" },
+  { id: "2", name: "Tech Store" },
+  { id: "3", name: "Fashion Corner" },
+]);
+
+const descriptionCharCount = computed(() => form.description.length);
+
+const validateForm = () => {
+  try {
+    listingSchema.parse(form);
+    errors.value = {};
+    return true;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      errors.value = {};
+      error.errors.forEach((err) => {
+        const path = err.path.join(".");
+        errors.value[path] = err.message;
+      });
+    }
+    return false;
+  }
+};
+
+// Envoi du formulaire
+const onSubmit = async () => {
+  if (!validateForm()) {
+    toast("Erreurs de validation", {
+      description: "Veuillez corriger les erreurs dans le formulaire",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  if (!uploadedImages.value.length) {
+    toast("Images manquantes", {
+      description: "Veuillez ajouter au moins une image",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  isLoading.value = true;
+
+  try {
+    // construction du FormData pour la Edge Function
+    const fd = new FormData();
+
+    Object.entries(form).forEach(([key, value]) => {
+      fd.append(key, value);
+    });
+
+    fd.append("images", Images.value);
+
+    Images.value.forEach((file) => {
+      fd.append("images", file);
+    });
+
+    const result = await supabaseService.createProduct(fd);
+
+    if (result.error) {
+      console.log(result);
+      throw new Error(result.error || "Erreur serveur");
+    }
+
+    toast("Annonce publiée !", {
+      description: "Votre annonce est maintenant visible",
+    });
+
+    // Redirection (exemple)
+    // router.push('/dashboard/listings');
+  } catch (error) {
+    console.error(error);
+    toast("Erreur de publication", {
+      description: error.message || "Impossible de publier l'annonce",
       variant: "destructive",
     });
   } finally {

@@ -241,18 +241,18 @@ const sidebarCollapsed = ref(false);
 
 const navItems = ref([
   { name: "Mes annonces", href: "/dashboard", icon: Package },
-  {
-    name: "Historique d'achats",
-    href: "/dashboard/orders",
-    icon: ShoppingBag,
-  },
-  { name: "Mes dons", href: "/dashboard/donations", icon: Heart },
+  //   {
+  //     name: "Historique d'achats",
+  //     href: "/dashboard/orders",
+  //     icon: ShoppingBag,
+  //   },
+  //   { name: "Mes dons", href: "/dashboard/donations", icon: Heart },
   {
     name: "Créer une annonce",
     href: "/dashboard/create-listing",
     icon: PlusCircle,
   },
-  { name: "Faire un don", href: "/dashboard/donate", icon: Gift },
-  { name: "Mon compte", href: "/dashboard/profile", icon: User },
+  //   { name: "Faire un don", href: "/dashboard/donate", icon: Gift },
+  //   { name: "Mon compte", href: "/dashboard/profile", icon: User },
 ]);
 </script>
