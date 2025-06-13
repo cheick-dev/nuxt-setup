@@ -24,9 +24,6 @@
     </div>
 
     <div class="p-4 space-y-2">
-      <!-- Catégorie -->
-      <div class="text-xs text-gray-500">{{ product.category }}</div>
-
       <!-- Titre et prix -->
       <div class="flex justify-between items-start">
         <h3 class="font-medium text-gray-900 line-clamp-2">
@@ -43,7 +40,7 @@
       </p>
 
       <!-- Évaluation -->
-      <div class="flex items-center">
+      <!-- <div class="flex items-center">
         <div class="flex">
           <Star
             v-for="i in 5"
@@ -62,7 +59,7 @@
         <span class="text-xs text-gray-500 ml-1">
           ({{ product.reviewCount }})
         </span>
-      </div>
+      </div> -->
 
       <!-- Badges -->
       <div class="flex flex-wrap gap-1 pt-1">
@@ -81,19 +78,21 @@
       </div>
 
       <!-- Bouton -->
-      <Button class="w-full mt-2 bg-green-600 hover:bg-green-700">
-        <ShoppingCart class="w-4 h-4 mr-2" />
-        Ajouter au panier
+      <Button class="w-full" @click="goToDetails(product.id, product)">
+        <Eye class="w-4 h-4 mr-2" />
+        Voir le détail
       </Button>
     </div>
   </Card>
 </template>
 
 <script setup>
-import { CheckCircle, Truck, Star, ShoppingCart } from "lucide-vue-next";
+import { CheckCircle, Truck, Star, ShoppingCart, Eye } from "lucide-vue-next";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+const router = useRouter();
 
 const props = defineProps({
   product: {
@@ -101,6 +100,13 @@ const props = defineProps({
     required: true,
   },
 });
+
+const goToDetails = (id, product) => {
+  router.push({
+    path: `/dashboard/webshop/product/${id}`,
+    query: { data: encodeURIComponent(JSON.stringify(product)) },
+  });
+};
 
 // Fonctions
 const formatCurrency = (amount) => {

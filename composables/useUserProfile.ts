@@ -7,6 +7,7 @@ const userProfile = ref<any>(null)
 const isProfileLoading = ref(false)
 const profileError = ref<Error | null>(null)
 
+
 export const useUserProfile = () => {
     const user = useSupabaseUser()
 
@@ -43,6 +44,6 @@ export const useUserProfile = () => {
         userProfile,
         isProfileLoading,
         profileError,
-        refetchUserProfile: fetchUserProfile
+        refetchUserProfile: fetchUserProfile, user
     }
 }

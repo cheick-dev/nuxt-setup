@@ -47,7 +47,11 @@
       </nav>
 
       <!-- User info -->
-      <div class="p-4 border-t border-gray-200" v-if="userProfile">
+      <NuxtLink
+        href="/dashboard/profile"
+        class="p-4 border-t border-gray-200"
+        v-if="userProfile"
+      >
         <div class="flex items-center space-x-3">
           <div
             class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0"
@@ -70,7 +74,7 @@
             <p class="text-xs text-gray-500">{{ userProfile.role }}</p>
           </div>
         </div>
-      </div>
+      </NuxtLink>
     </aside>
 
     <!-- Sidebar Mobile (Sheet) -->
@@ -78,65 +82,49 @@
       <SheetContent side="left" class="w-64 p-0">
         <div class="flex flex-col h-full bg-white">
           <!-- Logo Mobile -->
-          <div class="p-6 border-b border-gray-200">
+          <div class="px-3 py-4 border-b border-gray-200">
             <div class="flex items-center space-x-2">
               <div
-                class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"
+                class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center p-2"
               >
                 <Package class="w-5 h-5 text-white" />
               </div>
-              <span class="text-xl font-bold text-gray-900">Dashboard</span>
+              <span
+                v-show="!sidebarCollapsed"
+                class="text-xl font-bold text-gray-900 transition-opacity duration-300"
+              >
+                Dashboard
+              </span>
             </div>
           </div>
 
           <!-- Navigation Mobile -->
           <nav class="flex-1 p-4 space-y-2">
-            <a
-              href="#"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-medium"
+            <NuxtLink
+              v-for="item in navItems"
+              :to="item.href"
+              :class="[
+                'flex items-center space-x-3 rounded-lg font-medium group p-2',
+                $route.path === item.href
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100',
+              ]"
             >
-              <ShoppingBag class="w-5 h-5" />
-              <span>Mes annonces</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
-            >
-              <Package class="w-5 h-5" />
-              <span>Historique d'achats</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
-            >
-              <Heart class="w-5 h-5" />
-              <span>Mes dons</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
-            >
-              <PlusCircle class="w-5 h-5" />
-              <span>Créer une annonce</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
-            >
-              <Gift class="w-5 h-5" />
-              <span>Faire un don</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
-            >
-              <Settings class="w-5 h-5" />
-              <span>Mon compte</span>
-            </a>
+              <component :is="item.icon" class="w-5 h-5 flex-shrink-0" />
+              <span
+                v-show="!sidebarCollapsed"
+                class="transition-opacity duration-300"
+              >
+                {{ item.name }}
+              </span>
+            </NuxtLink>
           </nav>
 
           <!-- User info Mobile -->
-          <div class="p-4 border-t border-gray-200">
+          <NuxtLink
+            href="/dashboard/profile"
+            class="p-4 border-t border-gray-200"
+          >
             <div class="flex items-center space-x-3">
               <div
                 class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center"
@@ -156,7 +144,7 @@
                 <p class="text-xs text-gray-500">{{ userProfile.role }}</p>
               </div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
       </SheetContent>
     </Sheet>
@@ -200,11 +188,7 @@
             </h1>
           </div>
 
-          <Button class="bg-blue-600 hover:bg-blue-700">
-            <PlusCircle class="w-4 h-4 mr-2" />
-            <span class="hidden sm:inline">Nouvelle annonce</span>
-            <span class="sm:hidden">Nouveau</span>
-          </Button>
+          <!-- <StoreForm /> -->
         </div>
       </header>
 
@@ -219,11 +203,7 @@
 import { ref } from "vue";
 import {
   Package,
-  ShoppingBag,
-  Heart,
   PlusCircle,
-  Gift,
-  Settings,
   User,
   Menu,
   PanelLeftClose,
@@ -233,8 +213,9 @@ import { Button } from "@/components/ui/button";
 // import { Card } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import StoreForm from "@/components/store/CreateStoreForm.vue";
 
-const { userProfile, isProfileLoading, profileError } = useUserProfile();
+const { userProfile } = useUserProfile();
 
 const mobileMenuOpen = ref(false);
 const sidebarCollapsed = ref(false);

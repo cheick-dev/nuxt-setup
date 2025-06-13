@@ -29,11 +29,17 @@
           </div>
           <div class="flex items-center space-x-3" v-else>
             <Button variant="ghost" class="hidden sm:inline-flex">
-              {{ user.email }}
+              <NuxtLink to="/dashboard" class="flex items-center space-x-2">
+                {{ user.email }}
+              </NuxtLink>
             </Button>
-            <NuxtLink to="/dashboard">
-              <Button>Dashboard </Button>
-            </NuxtLink>
+            <Button>
+              <NuxtLink to="/cart-list" class="flex items-center space-x-2"
+                ><ShoppingBag class="w-6 h-6" />
+                <span class="hidden sm:inline ml-2">Mon panier</span>
+              </NuxtLink>
+            </Button>
+
             <Button variant="destructive">
               <LogOut class="w-4 h-4" />
               <span class="hidden sm:inline ml-2">Déconnexion</span>
@@ -155,7 +161,7 @@
 </template>
 
 <script setup>
-import { Package, LogOut, PlusCircle } from "lucide-vue-next";
+import { Package, LogOut, PlusCircle, ShoppingBag } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 const user = useSupabaseUser();
 </script>

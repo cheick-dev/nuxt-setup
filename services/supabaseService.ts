@@ -135,6 +135,168 @@ export const supabaseService = {
         const data = await response.json();
         return data.products;
     },
+
+
+    // Stores
+    async getMyProducts() {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+        const response = await fetch(`${baseUrl}/get-all-products`)
+        const data = await response.json();
+        return data.products.filter((product: any) => product.user_id === session.data?.session?.user.id)
+    },
+
+    async createStore(payload: any) {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/create-store`, {
+            method: 'POST',
+            headers: {
+                // "Content-Type": "multipart/form-data",
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        return data;
+    },
+
+    // Cart
+    async getMyCart() {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/cart-items`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        const data = await response.json();
+        return data;
+    },
+
+    async addToCart(payload: any) {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/cart-items`, {
+            method: 'POST',
+            headers: {
+                // "Content-Type": "multipart/form-data",
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        return data;
+    },
+    async removeFromCart(id: any) {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/cart-items`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ id, user_id: session.data?.session?.user.id }),
+        });
+
+        const data = await response.json();
+        return data;
+    },
+    async updateCartItem(payload: any) {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/cart-items`, {
+            method: 'PATCH',
+            headers: {
+                // "Content-Type": "multipart/form-data",
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        return data;
+    },
+
+
+    // Payment
+    async createPayment(payload: any) {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/payments`, {
+            method: 'POST',
+            headers: {
+                // "Content-Type": "multipart/form-data",
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        return data;
+    },
+
+    async getPayments() {
+        const supabase = useSupabaseClient();
+        const session = await supabase.auth.getSession();
+
+        const token = session.data?.session?.access_token;
+        if (!token) {
+            throw new Error('Session introuvable');
+        }
+
+        const response = await fetch(`${baseUrl}/payments`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        const data = await response.json();
+        return data;
+    },
 };
 
 

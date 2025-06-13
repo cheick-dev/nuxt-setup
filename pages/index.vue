@@ -1,8 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Contenu principal -->
     <main>
-      <!-- Section Hero -->
       <section
         class="relative bg-gradient-to-r from-green-50 to-green-100 py-16 md:py-24"
       >
@@ -17,14 +15,13 @@
                 responsables pour une consommation plus éthique et durable.
               </p>
               <div class="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" class="bg-green-600 hover:bg-green-700">
-                  Explorer les produits
-                </Button>
-                <Button variant="outline" size="lg"> Devenir vendeur </Button>
+                <Button size="lg" class="bg-green-600 hover:bg-green-700"
+                  >Explorer les produits</Button
+                >
+                <Button variant="outline" size="lg">Devenir vendeur</Button>
               </div>
             </div>
             <div class="md:w-1/2 hidden md:block">
-              <!-- src="/images.jpg?height=400&width=600&text=Marketplace+Hero" -->
               <img
                 src="/hero.jpg"
                 alt="Marketplace Hero"
@@ -35,18 +32,16 @@
         </div>
       </section>
 
-      <!-- Filtres et produits -->
       <section class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex flex-col md:flex-row gap-8">
             <!-- Sidebar filtres -->
-            <div class="md:w-64 flex-shrink-0">
+            <aside class="md:w-64 flex-shrink-0">
               <div
                 class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 sticky top-24"
               >
                 <h3 class="font-medium text-lg mb-4">Filtres</h3>
 
-                <!-- Recherche -->
                 <div class="mb-6">
                   <Label for="search">Recherche</Label>
                   <div class="relative mt-1">
@@ -62,7 +57,6 @@
                   </div>
                 </div>
 
-                <!-- Prix -->
                 <div class="mb-6">
                   <Label class="mb-2 block">Prix</Label>
                   <Slider
@@ -83,13 +77,12 @@
                   </div>
                 </div>
 
-                <!-- État -->
                 <div class="mb-6">
                   <Label class="mb-2 block">État</Label>
                   <Select v-model="condition">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Tous les états" />
-                    </SelectTrigger>
+                    <SelectTrigger
+                      ><SelectValue placeholder="Tous les états"
+                    /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Tous les états</SelectItem>
                       <SelectItem value="new">Neuf</SelectItem>
@@ -100,7 +93,6 @@
                   </Select>
                 </div>
 
-                <!-- Options -->
                 <div class="space-y-3">
                   <div class="flex items-center space-x-2">
                     <Switch
@@ -116,24 +108,22 @@
                   </div>
                 </div>
 
-                <Button class="w-full mt-6">Appliquer les filtres</Button>
+                <Button class="w-full mt-6" @click="applyFilters"
+                  >Appliquer les filtres</Button
+                >
               </div>
-            </div>
+            </aside>
 
             <!-- Produits -->
             <div class="flex-1">
-              <!-- En-tête des résultats -->
               <div
                 class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6"
               >
                 <h2 class="text-2xl font-bold text-gray-900">Nos produits</h2>
-
                 <div class="flex items-center mt-3 sm:mt-0">
                   <Label for="sort" class="mr-2 text-sm">Trier par:</Label>
                   <Select v-model="sortBy" class="w-40">
-                    <SelectTrigger id="sort">
-                      <SelectValue />
-                    </SelectTrigger>
+                    <SelectTrigger id="sort"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="newest">Plus récents</SelectItem>
                       <SelectItem value="price_asc">Prix croissant</SelectItem>
@@ -146,7 +136,6 @@
                 </div>
               </div>
 
-              <!-- Grille de produits -->
               <div
                 v-if="isLoading"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -155,11 +144,11 @@
               </div>
 
               <div
-                v-else-if="filteredProducts.length > 0"
+                v-else-if="paginatedProducts.length > 0"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 <HomeProductCard
-                  v-for="product in filteredProducts"
+                  v-for="product in paginatedProducts"
                   :key="product.id"
                   :product="product"
                 />
@@ -180,20 +169,34 @@
               </div>
 
               <!-- Pagination -->
-              <div class="mt-12 flex justify-center">
+              <div class="mt-12 flex justify-center" v-if="totalPages > 1">
                 <div class="flex space-x-1">
-                  <Button variant="outline" size="sm" disabled>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    :disabled="currentPage === 1"
+                    @click="currentPage--"
+                  >
                     <ChevronLeft class="w-4 h-4" />
+                  </Button>
+                  <Button
+                    v-for="page in totalPages"
+                    :key="page"
+                    variant="outline"
+                    size="sm"
+                    :class="{
+                      'bg-green-50 text-green-600': page === currentPage,
+                    }"
+                    @click="currentPage = page"
+                  >
+                    {{ page }}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    class="bg-green-50 text-green-600"
-                    >1</Button
+                    :disabled="currentPage === totalPages"
+                    @click="currentPage++"
                   >
-                  <Button variant="outline" size="sm">2</Button>
-                  <Button variant="outline" size="sm">3</Button>
-                  <Button variant="outline" size="sm">
                     <ChevronRight class="w-4 h-4" />
                   </Button>
                 </div>
@@ -207,16 +210,14 @@
 </template>
 
 <script setup>
-definePageMeta({
-  layout: "default",
-});
+definePageMeta({ layout: "default" });
 
 import { Package, Search, ChevronLeft, ChevronRight } from "lucide-vue-next";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -224,16 +225,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 
 import HomeProductCard from "@/components/home/HomeProductCard.vue";
 import SkeletonProductCard from "@/components/SkeletonProductCard";
-
 import { supabaseService } from "@/services/supabaseService";
 
-// État
 const isLoading = ref(true);
+const products = ref([]);
 const searchQuery = ref("");
 const priceRange = ref([0, 2000]);
 const condition = ref("all");
@@ -241,82 +239,77 @@ const sortBy = ref("newest");
 const certifiedOnly = ref(false);
 const freeShipping = ref(false);
 const selectedCategories = ref({});
+const currentPage = ref(1);
+const perPage = 6;
 
-const products = ref([]);
-
-// Initialiser les catégories sélectionnées
 onMounted(async () => {
   const result = await supabaseService.getAllProducts();
   products.value = result;
   isLoading.value = false;
 });
 
-// Produits filtrés
+const applyFilters = () => {
+  currentPage.value = 1;
+};
+
 const filteredProducts = computed(() => {
   let result = [...products.value];
 
-  // Filtre par recherche
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
+    const q = searchQuery.value.toLowerCase();
     result = result.filter(
-      (product) =>
-        product.title.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query)
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q)
     );
   }
 
-  // Filtre par prix
   result = result.filter(
-    (product) =>
-      product.price >= priceRange.value[0] &&
-      product.price <= priceRange.value[1]
+    (p) => p.price >= priceRange.value[0] && p.price <= priceRange.value[1]
   );
 
-  // Filtre par catégorie
   const selectedCategoryIds = Object.entries(selectedCategories.value)
-    .filter(([_, isSelected]) => isSelected)
+    .filter(([, val]) => val)
     .map(([id]) => Number(id));
-
-  if (selectedCategoryIds.length > 0) {
-    result = result.filter((product) =>
-      selectedCategoryIds.includes(product.categoryId)
-    );
+  if (selectedCategoryIds.length) {
+    result = result.filter((p) => selectedCategoryIds.includes(p.categoryId));
   }
 
-  // Filtre par état
   if (condition.value !== "all") {
-    result = result.filter((product) => product.condition === condition.value);
+    result = result.filter((p) => p.condition === condition.value);
   }
 
-  // Filtre par vendeur certifié
   if (certifiedOnly.value) {
-    result = result.filter((product) => product.certified);
+    result = result.filter((p) => p.certified);
   }
 
-  // Filtre par livraison gratuite
   if (freeShipping.value) {
-    result = result.filter((product) => product.freeShipping);
+    result = result.filter((p) => p.freeShipping);
   }
 
-  // Tri
-  if (sortBy.value === "price_asc") {
-    result.sort((a, b) => a.price - b.price);
-  } else if (sortBy.value === "price_desc") {
+  if (sortBy.value === "price_asc") result.sort((a, b) => a.price - b.price);
+  else if (sortBy.value === "price_desc")
     result.sort((a, b) => b.price - a.price);
-  } else if (sortBy.value === "newest") {
+  else if (sortBy.value === "newest")
     result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  } else if (sortBy.value === "popular") {
+  else if (sortBy.value === "popular")
     result.sort((a, b) => b.popularity - a.popularity);
-  }
 
   return result;
 });
 
-// Fonctions utilitaires
+const totalPages = computed(() =>
+  Math.ceil(filteredProducts.value.length / perPage)
+);
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * perPage;
+  return filteredProducts.value.slice(start, start + perPage);
+});
+
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("fr-FR", {
     style: "currency",
-    currency: "EUR",
+    currency: "XOF",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
