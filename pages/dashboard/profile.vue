@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 definePageMeta({
   middleware: ["auth"],
   layout: "dashboard",
@@ -25,7 +25,7 @@ async function signOut() {
     if (logoutError) throw logoutError;
 
     navigateTo("/auth/login");
-  } catch (e: any) {
+  } catch (e) {
     error.value = e.message || "An error occurred during sign out";
   } finally {
     loading.value = false;

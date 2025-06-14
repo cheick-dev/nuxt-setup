@@ -208,6 +208,8 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Home,
+  TestTube2,
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 // import { Card } from "@/components/ui/card";
@@ -221,7 +223,8 @@ const mobileMenuOpen = ref(false);
 const sidebarCollapsed = ref(false);
 
 const navItems = ref([
-  { name: "Mes annonces", href: "/dashboard", icon: Package },
+  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Mes annonces", href: "/dashboard/my-products", icon: Package },
   //   {
   //     name: "Historique d'achats",
   //     href: "/dashboard/orders",
@@ -233,6 +236,7 @@ const navItems = ref([
     href: "/dashboard/create-listing",
     icon: PlusCircle,
   },
+  { name: "Test", href: "/dashboard/test", icon: TestTube2 },
   //   { name: "Faire un don", href: "/dashboard/donate", icon: Gift },
   //   { name: "Mon compte", href: "/dashboard/profile", icon: User },
 ]);
